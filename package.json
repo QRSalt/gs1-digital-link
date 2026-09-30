@@ -1,0 +1,65 @@
+{
+  "name": "gs1-digital-link",
+  "version": "1.0.0",
+  "description": "Encode, parse and validate GS1 Digital Link URIs and GS1 element strings. No dependencies.",
+  "keywords": [
+    "gs1",
+    "digital-link",
+    "gtin",
+    "barcode",
+    "application-identifier",
+    "check-digit",
+    "sscc",
+    "element-string",
+    "ean",
+    "retail",
+    "qr-code",
+    "typescript"
+  ],
+  "license": "MIT",
+  "homepage": "https://qrsalt.com/barcode-generator",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "prepublishOnly": "npm run typecheck && npm run build && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QRSalt/gs1-digital-link.git"
+  },
+  "bugs": {
+    "url": "https://github.com/QRSalt/gs1-digital-link/issues"
+  }
+}

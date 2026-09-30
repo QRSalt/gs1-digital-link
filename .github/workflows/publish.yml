@@ -1,0 +1,42 @@
+name: Publish
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDC for npm trusted publishing and provenance
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # No registry-url: setup-node would write an empty _authToken, and npm
+      # would then skip the OIDC exchange and fail with ENEEDAUTH.
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: No empty auth token may shadow OIDC
+        run: sed -i '/_authToken/d' "${NPM_CONFIG_USERCONFIG:-$HOME/.npmrc}" 2>/dev/null || true
+
+      # Trusted publishing needs npm 11.5.1 or newer.
+      - run: npm install -g npm@^11.5.1
+
+      - name: The tag and package.json must agree
+        run: |
+          tagged="${GITHUB_REF_NAME#v}"
+          declared="$(node -p "require('./package.json').version")"
+          if [ "$tagged" != "$declared" ]; then
+            echo "Tag $GITHUB_REF_NAME says $tagged, package.json says $declared." >&2
+            exit 1
+          fi
+
+      - run: npm ci
+      # prepublishOnly runs typecheck, build and tests first.
+      - run: npm publish --provenance --access public
